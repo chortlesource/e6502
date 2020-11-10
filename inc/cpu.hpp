@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////
 //
-// e6502 - e6502.cpp
+// e6502 - cpu.hpp
 //
 // Copyright (c) 2020 Christopher M. Short
 //
@@ -21,14 +21,28 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#include "e6502.hpp"
+#ifndef _E6502_CPU_HPP
+#define _E6502_CPU_HPP
 
 
 /////////////////////////////////////////////////////////////
-// Main function
+// CPUSTATE struct
 //
+// The CPUSTATE is the container for the current CPU state
 
-int main(const int argc, const char *argv[]) {
+struct CPUSTATE {
+  bool initialized;
+  bool invalid_opcode;
 
-  return 0;
-}
+  std::uint64_t cycles;  // Record the number of cycles
+
+  std::uint8_t a;        // Accumulator
+  std::uint8_t x;        // Index register
+  std::uint8_t y;        // Index register
+  std::uint8_t sp;       // Stack pointer
+  std::uint16_t pc;      // Program counter
+  std::uint8_t flags;    // CPU Status flags
+};
+
+
+#endif // _E6502_CPU_HPP
