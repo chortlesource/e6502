@@ -33,6 +33,7 @@
 #include <iostream>
 #include <iomanip>
 #include <fstream>
+#include <functional>
 #include <experimental/filesystem>
 
 #include <string>
@@ -43,9 +44,11 @@
 // LOCAL INCLUDES
 //
 
-#include "forwards.hpp"
-#include "debug.hpp"
-#include "memory.hpp"
-#include "cpu.hpp"
+#include "util/forwards.hpp"
+#include "util/debug.hpp"
+#include "util/timer.hpp"
+#include "component/instruction.hpp"
+#include "component/memory.hpp"
+#include "component/cpu.hpp"
 
 #endif // _E6502_HPP

@@ -29,6 +29,7 @@
 // Forward Declarations
 //
 
+class INSTRUCTION;
 class MEMORY;
 class CPU;
 
@@ -49,7 +50,7 @@ static const uint8_t FLAG_CAR_MASK = 0x01;
 static const uint16_t NMI_LOW     = 0xFFFA;
 static const uint16_t NMI_HIGH    = 0xFFFB;
 static const uint16_t RESET_LOW   = 0xFFFC;
-static const uint16_t RESET_HIGHT = 0xFFFD;
+static const uint16_t RESET_HIGH = 0xFFFD;
 static const uint16_t IRQ_LOW     = 0xFFFE;
 static const uint16_t IRQ_HIGH    = 0xFFFF;
 
@@ -75,5 +76,6 @@ inline void set_decimal  (bool const& value, std::uint8_t& flags) { value ? (fla
 inline void set_interrupt(bool const& value, std::uint8_t& flags) { value ? (flags |= FLAG_INT_MASK) : (flags &= (~FLAG_INT_MASK)); }
 inline void set_zero     (bool const& value, std::uint8_t& flags) { value ? (flags |= FLAG_ZER_MASK) : (flags &= (~FLAG_ZER_MASK)); }
 inline void set_carry    (bool const& value, std::uint8_t& flags) { value ? (flags |= FLAG_CAR_MASK) : (flags &= (~FLAG_CAR_MASK)); }
+
 
 #endif // _E6502_FORWARDS_HPP

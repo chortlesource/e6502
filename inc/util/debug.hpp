@@ -1,31 +1,29 @@
 ////////////////////////////////////////////////////////////////////////////
 //
-// atg - debug.hpp
+// e6502 - debug.hpp
 //
 // Copyright (c) 2020 Christopher M. Short
 //
-// This file is part of atg.
+// This file is part of e6502.
 //
-// atg is free software: you can redistribute it and/or modify
+// e6502 is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// atg is distributed in the hope that it will be useful,
+// e6502 is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with atg. If not, see <https://www.gnu.org/licenses/>.
+// along with e6502. If not, see <https://www.gnu.org/licenses/>.
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#ifndef _DEBUG_HPP
-#define _DEBUG_HPP
+#ifndef _E6502_DEBUG_HPP
+#define _E6502_DEBUG_HPP
 
-
-namespace ATG {
 
 /////////////////////////////////////////////////////////////////
 // DEBUG Functions
@@ -131,19 +129,17 @@ struct DEBUG_LOG {
 //
 
 #ifdef DEBUG_BUILD
-#define DEBUG(...) ATG::DEBUG_LOG(std::cout, ATG::LOG_TYPE::DEBUG, __FILE__, __LINE__).write(__VA_ARGS__)
-#define INFO(...) ATG::DEBUG_LOG(std::cout, ATG::LOG_TYPE::INFO, __FILE__, __LINE__).write(__VA_ARGS__)
-#define WARN(...) ATG::DEBUG_LOG(std::cout, ATG::LOG_TYPE::WARN, __FILE__, __LINE__).write(__VA_ARGS__)
-#define ERROR(...) ATG::DEBUG_LOG(std::cout, ATG::LOG_TYPE::ERROR, __FILE__, __LINE__).write(__VA_ARGS__)
+#define DEBUG(...) DEBUG_LOG(std::cout, LOG_TYPE::DEBUG, __FILE__, __LINE__).write(__VA_ARGS__)
+#define INFO(...) DEBUG_LOG(std::cout, LOG_TYPE::INFO, __FILE__, __LINE__).write(__VA_ARGS__)
+#define WARN(...) DEBUG_LOG(std::cout, LOG_TYPE::WARN, __FILE__, __LINE__).write(__VA_ARGS__)
+#define ERROR(...) DEBUG_LOG(std::cout, LOG_TYPE::ERROR, __FILE__, __LINE__).write(__VA_ARGS__)
 #else
 // #define DEBUG(msg, ...) do {} while(0)
 #define DEBUG(...) do {} while(0)
 #define INFO(...) do {} while(0)
 #define WARN(...) do {} while(0)
-#define ERROR(...) ATG::DEBUG_LOG(std::cout, ATG::LOG_TYPE::ERROR, __FILE__, __LINE__).write(__VA_ARGS__)
+#define ERROR(...) DEBUG_LOG(std::cout, LOG_TYPE::ERROR, __FILE__, __LINE__).write(__VA_ARGS__)
 #endif
 
-};
 
-
-#endif // _WAEYN_LOG_HPP
+#endif // _E6502_HPP
