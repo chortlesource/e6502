@@ -45,4 +45,30 @@ struct CPUSTATE {
 };
 
 
+/////////////////////////////////////////////////////////////
+// CPU Class
+//
+// The CPU Class handles CPU logic manipulating the CPUSTATE
+
+
+class CPU {
+public:
+  // Public CPU methods
+  CPU();
+
+  void nmi();
+  void irq();
+  void run();
+  void load(std::string const& path, std::uint16_t const& mstart);
+  void reset();
+
+private:
+  // Private CPU attributes
+  CPUSTATE state;
+  MEMORY   memory;
+
+  // Private CPU methods
+};
+
+
 #endif // _E6502_CPU_HPP

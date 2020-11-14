@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////
 //
-// e6502 - e6502.hpp
+// e6502 - memory.hpp
 //
 // Copyright (c) 2020 Christopher M. Short
 //
@@ -21,31 +21,47 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#ifndef _E6502_HPP
-#define _E6502_HPP
+#ifndef _E6502_MEMORY_HPP
+#define _E6502_MEMORY_HPP
 
 
 /////////////////////////////////////////////////////////////
-// DEPENDENCIES
+// DEFINITIONS
 //
 
-// Standard Libraries
-#include <iostream>
-#include <iomanip>
-#include <fstream>
-#include <experimental/filesystem>
+static const std::uint16_t RAM_SIZE = 65535;
 
-#include <string>
-#include <array>
-#include <mutex>
+namespace fs = std::experimental::filesystem;
+
 
 /////////////////////////////////////////////////////////////
-// LOCAL INCLUDES
+// MEMORY Class
 //
+// The MEMORY Class emulates 65535 bytes of RAM
 
-#include "forwards.hpp"
-#include "debug.hpp"
-#include "memory.hpp"
-#include "cpu.hpp"
+class MEMORY {
+public:
+  MEMORY();
+  ~MEMORY() {};
 
-#endif // _E6502_HPP
+  // Public MEMORY methods
+  void load(std::string const& path, std::uint16_t const& mstart);
+
+  std::uint8_t &      operator[](std::uint16_t const& addr) { return memory[addr]; }
+  std::uint8_t const& operator[](std::uint16_t const& addr) const { return memory[addr]; }
+
+private:
+  // Private MEMORY attributes
+  bool                               initialized;
+  std::array<std::uint8_t, RAM_SIZE> memory;
+
+  // Private MEMORY methods
+  static inline bool fexist(std::string const& path) {
+    // Identify if file exists and return true if exists
+    return (fs::exists(fs::path(path)) && fs::is_regular_file(fs::path(path)));
+  }
+
+};
+
+
+#endif // _E6502_MEMORY_HPP

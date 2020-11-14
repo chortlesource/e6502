@@ -15,7 +15,7 @@ endif()
 
 ## PROJECT FILES
 include_directories(${CMAKE_SOURCE_DIR}/inc)
-add_subdirectory(${CMAKE_SOURCE_DIR}/src/lib)
+add_subdirectory(${CMAKE_SOURCE_DIR}/src)
 
 ## EXECUTABLE
 add_executable(${PROJECT_NAME} ${PROJECT_SRC})

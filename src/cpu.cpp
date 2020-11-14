@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////
 //
-// e6502 - e6502.hpp
+// e6502 - cpu.cpp
 //
 // Copyright (c) 2020 Christopher M. Short
 //
@@ -21,31 +21,31 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#ifndef _E6502_HPP
-#define _E6502_HPP
+#include "e6502.hpp"
 
 
 /////////////////////////////////////////////////////////////
-// DEPENDENCIES
+// Public CPU methods
 //
 
-// Standard Libraries
-#include <iostream>
-#include <iomanip>
-#include <fstream>
-#include <experimental/filesystem>
+CPU::CPU() {
 
-#include <string>
-#include <array>
-#include <mutex>
+}
+
+void CPU::nmi();
+void CPU::irq();
+void CPU::run();
+void CPU::load(std::string const& path, std::uint16_t const& mstart);
+
+
+void CPU::reset() {
+  state.a = 0x00;
+  state.y = 0x00;
+  state.x = 0x00;
+
+  
+}
 
 /////////////////////////////////////////////////////////////
-// LOCAL INCLUDES
+// Private CPU methods
 //
-
-#include "forwards.hpp"
-#include "debug.hpp"
-#include "memory.hpp"
-#include "cpu.hpp"
-
-#endif // _E6502_HPP
