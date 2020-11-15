@@ -26,36 +26,55 @@
 
 
 /////////////////////////////////////////////////////////////
+// OPCODE / ADMODE Enumeration
+//
+
+enum class OPCODE {
+  INV, ADS, AND, ASL, BCC, BCS, BEQ, BIT, BMI, BNE, BPL, BRK,
+  BVC, BVS, CLC, CLD, CLI, CLV, CMP, CPX, CPY, DEC, DEX, DEY,
+  EOR, INC, INX, INY, JMP, JSR, LDA, LDX, LDY
+};
+
+enum class ADMODE {
+  INV, ACC, IMM, ZER, ZPX, ZPY, REL, ABS, ABX, ABY, IMP, IND, INX, INY
+};
+
+
+/////////////////////////////////////////////////////////////
 // INSTRUCTION Class
 //
 // The INSTRUCTION class handles calls to specific CPU
 // functions for use within the instruction table
 
 class INSTRUCTION {
-  using INSTR = std::function<void(std::uint16_t const&)>;
-  using ADDRS = std::function<std::uint16_t()>;
+  typedef void (CPU::*INSTR)(uint16_t const&);
+  typedef uint16_t const& (CPU::*ADDRMODE)();
 
 public:
-  INSTRUCTION(std::uint8_t const& i, INSTR const& instr, ADDRS addr) : id(i), instruction(instr), address_mode(addr) {};
+  INSTRUCTION()
+    : id(OPCODE::INV), mode(ADMODE::INV), cpu(nullptr), address_mode(nullptr), instruction(nullptr) {}
+  INSTRUCTION(OPCODE const& i, ADMODE const& m, CPU *c, ADDRMODE addr, INSTR const& instr)
+    : id(i), mode(m), cpu(c), address_mode(addr), instruction(instr) {};
 
   // Public INSTRUCTION methods
   void operator()() const {
     // Execure the delegate function by us of ();
-    std::uint16_t data = address_mode();
-    instruction(data);
+    std::uint16_t data = (cpu->*address_mode)();
+    (cpu->*instruction)(data);
   };
 
   bool operator==(INSTRUCTION const& rhs) const noexcept {
     // Compare delegates to see if the pointers match
-    return (id == rhs.id);
+    return (id == rhs.id) && (mode == rhs.mode);
   };
-
 
 private:
   // Private INSTRUCTION attributes
-  std::uint8_t id;
-  INSTR        instruction;
-  ADDRS        address_mode;
+  OPCODE   id;
+  ADMODE   mode;
+  CPU*     cpu;
+  ADDRMODE address_mode;
+  INSTR    instruction;
 
 };
 

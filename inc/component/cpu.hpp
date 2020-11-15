@@ -53,6 +53,7 @@ struct CPUSTATE {
 
 
 class CPU {
+
 public:
   // Public CPU methods
   CPU();
@@ -66,11 +67,13 @@ public:
 
 private:
   // Private CPU attributes
-  CPUSTATE state;
-  MEMORY   memory;
+  CPUSTATE                     state;
+  MEMORY                       memory;
+
+  std::array<INSTRUCTION, 256> instructions;
 
   // Private CPU methods
-  void                stack_push(uint16_t const& data);
+  void stack_push(uint16_t const& data);
   uint8_t const& stack_pop();
 
   // Addressing Modes
