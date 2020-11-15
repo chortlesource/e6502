@@ -57,7 +57,7 @@ void CPU::irq() {
 }
 
 
-std::uint8_t const& CPU::step() {
+uint8_t const& CPU::step() {
   // Do something
   return state.cycles;
 }
@@ -98,7 +98,7 @@ void CPU::stack_push(std::uint16_t const& data) {
 }
 
 
-std::uint8_t const& CPU::stack_pop() {
+uint8_t const& CPU::stack_pop() {
   // Check for underflow
   if(state.sp == 0xFF)
     ERROR("CPU Error: Stack is empty");
@@ -176,7 +176,7 @@ uint16_t const& CPU::addr_mode_abx() {
 uint16_t const& CPU::addr_mode_aby() {
   // Absolute Y- stores in next two bytes as low order then high order + Y
   state.addr         = memory[state.pc++];
-  std::uint8_t high  = memory[state.pc++] << 8;
+  uint8_t high  = memory[state.pc++] << 8;
   return state.addr += high + state.y;
 }
 

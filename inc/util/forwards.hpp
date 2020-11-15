@@ -77,5 +77,7 @@ inline void set_interrupt(bool const& value, std::uint8_t& flags) { value ? (fla
 inline void set_zero     (bool const& value, std::uint8_t& flags) { value ? (flags |= FLAG_ZER_MASK) : (flags &= (~FLAG_ZER_MASK)); }
 inline void set_carry    (bool const& value, std::uint8_t& flags) { value ? (flags |= FLAG_CAR_MASK) : (flags &= (~FLAG_CAR_MASK)); }
 
+inline uint8_t to_bcd(uint8_t const& value) { return ((value / 10) << 4) | (value % 10); }
+inline uint8_t to_dec(uint8_t const& value) { return ((value >> 4) *10) + (value & 0xF); }
 
 #endif // _E6502_FORWARDS_HPP
