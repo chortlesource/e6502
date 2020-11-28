@@ -37,6 +37,7 @@
 #include <iomanip>
 #include <fstream>
 #include <functional>
+#include <sstream>
 #include <experimental/filesystem>
 
 #include <string>
@@ -62,6 +63,7 @@ static const std::string _APP_SOURCE  = "http://www.github.com/chortlesoft/e6502
 #include "util/forwards.hpp"
 #include "util/debug.hpp"
 #include "util/timer.hpp"
+#include "util/cliparse.hpp"
 #include "component/instruction.hpp"
 #include "component/memory.hpp"
 #include "component/cpu.hpp"

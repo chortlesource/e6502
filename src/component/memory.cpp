@@ -34,7 +34,7 @@ MEMORY::MEMORY() {
 };
 
 
-void MEMORY::load(std::string const& path, std::uint16_t const& mstart) {
+void MEMORY::load(std::string const& path) {
   // Perform some generic verification
   if(fexist(path)) {
 
@@ -48,7 +48,7 @@ void MEMORY::load(std::string const& path, std::uint16_t const& mstart) {
       input.seekg(0, input.beg);
 
       // Verify we can manage the file size
-      if(file_size > (RAM_SIZE + mstart)) {
+      if(file_size > RAM_SIZE) {
         ERROR("Failed to open file; File exceeds RAM capacity: ", path);
         return;
       }
@@ -58,7 +58,7 @@ void MEMORY::load(std::string const& path, std::uint16_t const& mstart) {
       input.read(buffer, file_size);
 
       for(unsigned int i = 0; i < file_size; i++)
-        memory[mstart + i] = static_cast<std::uint8_t>(buffer[i]);
+        memory[i] = static_cast<std::uint8_t>(buffer[i]);
 
       // Report success and free memory
       DEBUG("Binary file loaded: ", path);

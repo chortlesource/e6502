@@ -32,7 +32,7 @@ int main(const int argc, const char *argv[]) {
   // Initialize the emulator
   std::unique_ptr<EMULATOR> emulator;
   emulator = std::make_unique<EMULATOR>();
-  emulator->initialize();
+  emulator->initialize(argc, argv);
 
   // Run the emulator
   emulator->run();

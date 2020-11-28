@@ -32,10 +32,21 @@
 class INSTRUCTION;
 class MEMORY;
 class CPU;
-
+class DISPLAY;
+class LOG;
 class STATE;
 class EMULATOR;
 
+
+/////////////////////////////////////////////////////////////
+// EMULATOR Types
+//
+
+using DISPLAY_PTR = std::shared_ptr<DISPLAY>;
+using LOG_PTR     = std::shared_ptr<LOG>;
+using CPU_PTR     = std::shared_ptr<CPU>;
+using STATE_PTR   = std::shared_ptr<STATE>;
+using MEMORY_PTR  = std::shared_ptr<MEMORY>;
 
 /////////////////////////////////////////////////////////////
 // CPU static variables
@@ -82,5 +93,6 @@ inline void set_carry    (bool const& value, std::uint8_t& flags) { value ? (fla
 
 inline uint8_t to_bcd(uint8_t const& value) { return ((value / 10) << 4) | (value % 10); }
 inline uint8_t to_dec(uint8_t const& value) { return ((value >> 4) *10) + (value & 0xF); }
+
 
 #endif // _E6502_FORWARDS_HPP

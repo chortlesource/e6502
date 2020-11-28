@@ -41,9 +41,9 @@ struct STATE {
   STATUS  status;
   int     key;
 
-  DISPLAY display;
-  LOG     log;
-  CPU     cpu;
+  DISPLAY_PTR display;
+  LOG_PTR     log;
+  CPU_PTR     cpu;
 };
 
 
@@ -55,17 +55,17 @@ struct STATE {
 class EMULATOR {
 public:
   // Public EMULATOR methods
-  void initialize();
+  void initialize(int const& argc, const char *argv[]);
   void run();
   void finalize();
 
 private:
   // Private EMULATOR attributes;
-  bool                   initialized;
-  std::shared_ptr<STATE> state;
+  bool  initialized;
+  STATE state;
 
   // Private EMULATOR methods
-
+  void parse(CLIPARSE const& parse);
 };
 
 

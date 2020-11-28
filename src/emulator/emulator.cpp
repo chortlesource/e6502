@@ -28,8 +28,18 @@
 // Public EMULATOR methods
 //
 
-void EMULATOR::initialize() {
+void EMULATOR::initialize(int const& argc, const char *argv[]) {
   if(initialized) return;
+
+  CLIPARSE parser(argc, argv);
+  std::string fpath = parser.using_opt_value("-p");
+  std::string start = parser.using_opt_value("-o");
+  if(fpath.empty() || start.empty()) return;
+
+  std::stringstream converter(start);
+  unsigned int value;
+  converter >> std::hex >> value;
+
   // Initialize ncurses
   initscr();
   cbreak();
@@ -47,20 +57,25 @@ void EMULATOR::initialize() {
   init_pair(2, COLOR_BLACK, COLOR_WHITE);
 
   // Initiaize the emulator state
-  state = std::make_shared<STATE>();
-  state->status  = STATUS::RUN;
-  state->display.initialize();
-  state->cpu.load("./asset/6502_functional_test.bin", 0x0);
+  state.log     = std::make_shared<LOG>();
+  state.display = std::make_shared<DISPLAY>();
+  state.cpu     = std::make_shared<CPU>(state);
+
+  state.status  = STATUS::RUN;
+  state.display->initialize();
+  state.cpu->load(fpath, value);
   initialized    = true;
 }
 
 
 void EMULATOR::run() {
-  while(state->status != STATUS::EXIT) {
-    state->display.update(*state);
+  if(!initialized) return;
+
+  while(state.status != STATUS::EXIT) {
+    state.display->update(state);
 
     // Await key press and add to state
-    int opt = wgetch(state->display.get_window());
+    int opt = wgetch(state.display->get_window());
 
     // Handle key press
     switch(opt) {
@@ -69,23 +84,23 @@ void EMULATOR::run() {
         refresh();
         break;
       case 'x':
-        state->status = STATUS::EXIT;
+        state.status = STATUS::EXIT;
         break;
       case 's':
-        state->cpu.step(*state);
+        state.cpu->step();
         break;
       case KEY_UP:
         {
-          state->display.key_up();
+          state.display->key_up();
         }
         break;
       case KEY_DOWN:
         {
-          state->display.key_down(*state);
+          state.display->key_down(state);
         }
         break;
       default:
-        state->key = opt;
+        state.key = opt;
         break;
     }
   }
@@ -93,8 +108,13 @@ void EMULATOR::run() {
 
 
 void EMULATOR::finalize() {
-  state->display.finalize();
-  state       = nullptr;
+  if(!initialized) return;
+
+  state.display->finalize();
+  state.cpu       = nullptr;
+  state.display   = nullptr;
+  state.log       = nullptr;
+
   initialized = false;
   endwin();
 }

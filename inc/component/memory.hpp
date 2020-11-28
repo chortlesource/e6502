@@ -45,7 +45,7 @@ public:
   ~MEMORY() {};
 
   // Public MEMORY methods
-  void load(std::string const& path, std::uint16_t const& mstart);
+  void load(std::string const& path);
   void reset() { memory.fill(0); }
 
   std::uint8_t &      operator[](std::uint16_t const& addr) { return memory[addr]; }

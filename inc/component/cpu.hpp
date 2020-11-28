@@ -57,20 +57,24 @@ class CPU {
 
 public:
   // Public CPU methods
-  CPU();
+  CPU(STATE const& s);
 
   void nmi();
   void irq();
   void load(std::string const& path, uint16_t const& mstart = 0);
   void reset();
-  
-  uint8_t const& step(STATE& s);
+
+  std::uint8_t const& read(std::uint16_t const& addr);
+  void write(std::uint16_t const& addr, std::uint8_t const& val);
+
+  uint8_t const& step();
 
 private:
   // Private CPU attributes
   CPUSTATE                     state;
   MEMORY                       memory;
 
+  LOG_PTR                      log;
   std::array<INSTRUCTION, 256> instructions;
 
   // Private CPU methods

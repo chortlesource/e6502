@@ -78,10 +78,10 @@ void DISPLAY::finalize() {
 
 
 void DISPLAY::key_down(STATE const& state) {
-  if(state.log.size() < (unsigned)(height - 2))
+  if(state.log->size() < (unsigned)(height - 2))
     return;
 
-  if(offset < (state.log.size() - height + 3))
+  if(offset < (state.log->size() - height + 3))
     offset += 1;
 }
 
@@ -114,7 +114,7 @@ void DISPLAY::print_header() {
 
 void DISPLAY::print_logger(STATE const& state) {
   int max_height = height - 2;
-  int log_size   = state.log.size();
+  int log_size   = state.log->size();
   int max_lines  = log_size;
 
   // Ensure lines do not escape the bounds of the buffer
@@ -123,7 +123,7 @@ void DISPLAY::print_logger(STATE const& state) {
 
 
   for(int line = 0; line < max_lines && (line + (int)offset) < log_size; line++)
-      mvwprintw(window.get(), line + 1, 0, state.log[offset + line].c_str());
+      mvwprintw(window.get(), line + 1, 0, (*state.log)[offset + line].c_str());
 }
 
 

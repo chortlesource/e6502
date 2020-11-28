@@ -39,7 +39,7 @@ void CPU::opcode_invalid(uint16_t const& value) {
 // ADS - Add with Carry
 void CPU::opcode_ads(uint16_t const& value) {
   // Add A, Mem[Value] and Carry flag
-  uint16_t ads = memory[value] + state.a + is_carry_set(state.flags);
+  uint16_t ads = read(value) + state.a + is_carry_set(state.flags);
 
   // BCD Support
   if(is_decimal_set(state.flags)) {
@@ -69,7 +69,7 @@ void CPU::opcode_ads(uint16_t const& value) {
 
 // AND - Logical AND (Accumulator)
 void CPU::opcode_and(uint16_t const& value) {
-  state.a &= memory[value];
+  state.a &= read(value);
   // Check flags
   set_zero(!(state.a & 0xFF), state.flags);    // If zero set flag
   set_negative(state.a & 0x80, state.flags);   // If top bit set number is negative
@@ -78,7 +78,7 @@ void CPU::opcode_and(uint16_t const& value) {
 
 // ASL - Arithmetic Shift Left (Memory)
 void CPU::opcode_asl(uint16_t const& value) {
-  uint8_t m = memory[value];
+  uint8_t m = read(value);
   memory[value] = m << 1;
   // Check flags
   set_zero(!(m & 0xFF), state.flags);    // If zero set flag
@@ -119,7 +119,7 @@ void CPU::opcode_beq(uint16_t const& value) {
 
 // BIT - Bit Test
 void CPU::opcode_bit(uint16_t const& value) {
-  uint8_t v = memory[value] & state.a;
+  uint8_t v = read(value) & state.a;
   // Check flags
   set_zero(!(v & 0xFF), state.flags);  // Value not kept but used to set zero flag
   set_negative(memory[value] & 0x80, state.flags);  // Set to m(7)
@@ -153,8 +153,8 @@ void CPU::opcode_brk(uint16_t const& value) {
   stack_push(state.pc & 0xFF);        // Push the low byte next
   stack_push(state.flags);            // now push the flags
   set_break(true, state.flags);       // Set the IRQ
-  state.pc  = memory[IRQ_HIGH] << 8;
-  state.pc += memory[IRQ_LOW];
+  state.pc  = read(IRQ_HIGH) << 8;
+  state.pc += read(IRQ_LOW);
 }
 
 
@@ -198,7 +198,7 @@ void CPU::opcode_clv(uint16_t const& value) {
 
 // CMP - Compare
 void CPU::opcode_cmp(uint16_t const& value) {
-  uint8_t v = state.a - memory[value];
+  uint8_t v = state.a - read(value);
   // Check flags
   set_zero(!(v & 0xFF), state.flags);
   set_negative(v & 0x80, state.flags);
@@ -208,7 +208,7 @@ void CPU::opcode_cmp(uint16_t const& value) {
 
 // CPX - Compare X Register
 void CPU::opcode_cpx(uint16_t const& value) {
-  uint8_t v = state.x - memory[value];
+  uint8_t v = state.x - read(value);
   // Check flags
   set_zero(!(v & 0xFF), state.flags);
   set_negative(v & 0x80, state.flags);
@@ -218,7 +218,7 @@ void CPU::opcode_cpx(uint16_t const& value) {
 
 // CPY - Compare Y Register
 void CPU::opcode_cpy(uint16_t const& value) {
-  uint8_t v = state.y - memory[value];
+  uint8_t v = state.y - read(value);
   // Check flags
   set_zero(!(v & 0xFF), state.flags);
   set_negative(v & 0x80, state.flags);
@@ -228,8 +228,8 @@ void CPU::opcode_cpy(uint16_t const& value) {
 
 // DEC - Decrement Memory
 void CPU::opcode_dec(uint16_t const& value) {
-  uint8_t m     = memory[value] - 1;
-  memory[value] = m;
+  uint8_t m     = read(value);
+  write(value, (--m) % 256);
   // Check flags
   set_zero(!(m & 0xFF), state.flags);
   set_negative(m & 0x80, state.flags);
@@ -259,7 +259,7 @@ void CPU::opcode_dey(uint16_t const& value) {
 
 // EOR - Exclusive OR
 void CPU::opcode_eor(uint16_t const& value) {
-  state.a ^= memory[value];
+  state.a ^= read(value);
   // Check flags
   set_zero(!(state.a & 0xFF), state.flags);
   set_negative(state.a & 0x80, state.flags);
@@ -268,8 +268,8 @@ void CPU::opcode_eor(uint16_t const& value) {
 
 // INC - Increment Memory
 void CPU::opcode_inc(uint16_t const& value) {
-  uint8_t m     = memory[value] + 1;
-  memory[value] = m;
+  uint8_t m     = read(value);
+  write(value, (++m) % 256);
   // Check flags
   set_zero(!(m & 0xFF), state.flags);
   set_negative(m & 0x80, state.flags);
@@ -298,13 +298,14 @@ void CPU::opcode_iny(uint16_t const& value) {
 
 // JMP - Jump
 void CPU::opcode_jmp(uint16_t const& value) {
-  state.pc = value;
+  state.pc = value - 1;
+  std::cerr << std::hex << unsigned(value) << std::endl;
 }
 
 
 // JSR - Jump to Subroutine
 void CPU::opcode_jsr(uint16_t const& value) {
-  uint16_t addr = state.pc - 1;
+  uint16_t addr = --state.pc;
   stack_push((addr >> 8) & 0xFF);  // Push high byte
   stack_push(addr & 0xFF);         // Push low byte
   state.pc = value;
@@ -313,7 +314,7 @@ void CPU::opcode_jsr(uint16_t const& value) {
 
 // LDA - Load Accumulator
 void CPU::opcode_lda(uint16_t const& value) {
-  state.a = memory[value];
+  state.a = read(value);
   // Check flags
   set_zero(!(state.a & 0xFF), state.flags);
   set_negative(state.a & 0x80, state.flags);
@@ -322,7 +323,7 @@ void CPU::opcode_lda(uint16_t const& value) {
 
 // LDX - Load X Register
 void CPU::opcode_ldx(uint16_t const& value) {
-  state.x = memory[value];
+  state.x = read(value);
   // Check flags
   set_zero(!(state.x & 0xFF), state.flags);
   set_negative(state.x & 0x80, state.flags);
@@ -331,7 +332,7 @@ void CPU::opcode_ldx(uint16_t const& value) {
 
 // LDY - Load Y Register
 void CPU::opcode_ldy(uint16_t const& value) {
-  state.y = memory[value];
+  state.y = read(value);
   // Check flags
   set_zero(!(state.y & 0xFF), state.flags);
   set_negative(state.y & 0x80, state.flags);
@@ -340,8 +341,8 @@ void CPU::opcode_ldy(uint16_t const& value) {
 
 // LSR - Logical Shift Right (Memory)
 void CPU::opcode_lsr(uint16_t const& value) {
-  uint8_t m = memory[value];
-  memory[value] = m >> 1;
+  uint8_t m = read(value);
+  write(value, m >> 1);
   // Check flags
   set_zero(!(m & 0xFF), state.flags);
   set_carry(m & 0x01, state.flags);
@@ -368,7 +369,7 @@ void CPU::opcode_nop(uint16_t const& value) {
 
 // ORA - Logical Inclusive OR
 void CPU::opcode_ora(uint16_t const& value) {
-  state.a |= memory[value];
+  state.a |= read(value);
   // Check flags
   set_zero(!(state.a & 0xFF), state.flags);
   set_negative(state.a & 0x80, state.flags);
@@ -404,14 +405,14 @@ void CPU::opcode_plp(uint16_t const& value) {
 
 // ROL - Rotate Left (Memory)
 void CPU::opcode_rol(uint16_t const& value) {
-  uint8_t m = memory[value] << 1;
+  uint8_t m = read(value) << 1;
   if(is_carry_set(state.flags)) m |= 0x01;
 
   // Check flags
   set_zero(!(state.a & 0xFF), state.flags);
   set_carry(memory[value] & 0x80, state.flags);
   set_negative(m & 0x80, state.flags);
-  memory[value] = m;
+  write(value, m);
 }
 
 
@@ -430,14 +431,14 @@ void CPU::opcode_rol_acc(uint16_t const& value) {
 
 // ROR - Rotate Right (Memory)
 void CPU::opcode_ror(uint16_t const& value) {
-  uint8_t m = memory[value] >> 1;
+  uint8_t m = read(value) >> 1;
   if(is_carry_set(state.flags)) m |= 0x80;
 
   // Check flags
   set_zero(!(state.a & 0xFF), state.flags);
   set_carry(memory[value] & 0x01, state.flags);
   set_negative(m & 0x80, state.flags);
-  memory[value] = m;
+  write(value, m);
 }
 
 
@@ -471,7 +472,7 @@ void CPU::opcode_rts(uint16_t const& value) {
 
 // SBC - Subtract with Carry
 void CPU::opcode_sbc(uint16_t const& value) {
-  uint16_t sbc = state.a - memory[value] - !is_carry_set(state.flags);
+  uint16_t sbc = state.a - read(value) - !is_carry_set(state.flags);
 
   // BCD Support
   if(is_decimal_set(state.flags)) {
@@ -513,19 +514,19 @@ void CPU::opcode_sei(uint16_t const& value) {
 
 // STA - Store Accumulator
 void CPU::opcode_sta(uint16_t const& value) {
-  memory[value] = state.a;
+  write(value, state.a);
 }
 
 
 // STX - Store X Register
 void CPU::opcode_stx(uint16_t const& value) {
-  memory[value] = state.x;
+  write(value, state.x);
 }
 
 
 // STY - Store Y Register
 void CPU::opcode_sty(uint16_t const& value) {
-  memory[value] = state.y;
+  write(value, state.y);
 }
 
 

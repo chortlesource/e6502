@@ -28,7 +28,9 @@
 // Public CPU methods
 //
 
-CPU::CPU() {
+CPU::CPU(STATE const& s) {
+  // Initialize the CPU log
+  log = s.log;
 
   // Fill the table initially with invalid opcodes
   INSTRUCTION invalid { OPCODE::INV, ADMODE::INV, this, &CPU::addr_mode_imp, &CPU::opcode_invalid };
@@ -245,6 +247,7 @@ CPU::CPU() {
   reset();  // Reset the CPUSTATE
 }
 
+
 void CPU::nmi() {
   set_break(false, state.flags);
 
@@ -270,13 +273,14 @@ void CPU::irq() {
 }
 
 
-uint8_t const& CPU::step(STATE& s) {
+uint8_t const& CPU::step() {
 
   state.opcode = memory[state.pc];  // Fetch
-  s.log.log_cpu(state, instructions[state.opcode]);
   instructions[state.opcode](); // Decode and execute
+  log->log_cpu(state, instructions[state.opcode]);
 
-  ++state.pc;
+  state.pc++;
+
   // Do something
   return state.cycles;
 }
@@ -284,10 +288,10 @@ uint8_t const& CPU::step(STATE& s) {
 
 void CPU::load(std::string const& path, uint16_t const& mstart) {
   // Attempt to load our binary file
-  memory.load(path, mstart);
+  memory.load(path);
 
   // Set the PC to point to the beginning of the program
-  state.pc = 0x400;
+  state.pc = mstart;
 }
 
 
@@ -306,12 +310,24 @@ void CPU::reset() {
 }
 
 
+std::uint8_t const& CPU::read(std::uint16_t const& addr) {
+  log->log_read(addr, memory[addr]);
+  return memory[addr];
+}
+
+
+void CPU::write(std::uint16_t const& addr, std::uint8_t const& val) {
+  log->log_write(addr, val);
+  memory[addr] = val;
+}
+
+
 /////////////////////////////////////////////////////////////
 // Private CPU methods
 //
 
 void CPU::stack_push(uint16_t const& data) {
-  memory[0x100 + state.sp] = data;
+  write(0x100 + state.sp, data);
 
   // Check for overflow
   if(state.sp == 0x00) {
@@ -330,7 +346,7 @@ uint8_t const& CPU::stack_pop() {
   else
     ++state.sp;
 
-  return memory[0x100 + state.sp];
+  return read(0x100 + state.sp);
 }
 
 
@@ -353,14 +369,14 @@ uint16_t const& CPU::addr_mode_imm() {
 
 uint16_t const& CPU::addr_mode_zer() {
   // Zero page has only an 8 bit address operand which is the next byte
-  return state.addr = memory[state.pc++];
+  return state.addr = memory[state.pc += 1];
 }
 
 
 uint16_t const& CPU::addr_mode_zpx() {
   // Zero Page X - take zero page and add to the current value of X
   // then wrap to constrain to < 0xFF
-  state.addr = (memory[state.pc++] + state.x) % 256;
+  state.addr = (memory[state.pc += 1] + state.x) % 256;
   return state.addr;
 }
 
@@ -368,7 +384,7 @@ uint16_t const& CPU::addr_mode_zpx() {
 uint16_t const& CPU::addr_mode_zpy() {
   // Zero Page Y - take zero page and add to the current value of Y
   // then wrap to constrain to < 0xFF
-  state.addr = (memory[state.pc++] + state.y) % 256;
+  state.addr = (memory[state.pc += 1] + state.y) % 256;
   return state.addr;
 }
 
@@ -377,15 +393,15 @@ uint16_t const& CPU::addr_mode_rel() {
   // Relative - if(condition == true) a signed 8 bit relative offset
   // is added to program counter
   state.addr = memory[state.pc++];
-  if(state.addr & 0x80) state.addr |= 0xFF0;
+  if(state.addr & 0x80) state.addr |= 0xFF00;
   return state.addr += state.pc;
 }
 
 
 uint16_t const& CPU::addr_mode_abs() {
   // Absolute- stores in next two bytes as low order then high order
-  state.addr          = memory[state.pc++];
-  uint16_t high  = memory[state.pc++] << 8;
+  state.addr     = read(state.pc += 1);
+  uint16_t high  = read(state.pc += 1) << 8;
   return state.addr  += high;
 }
 

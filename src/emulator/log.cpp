@@ -47,7 +47,7 @@ void LOG::log_read(uint16_t const& addr, uint8_t const& val) {
 
   std::stringstream ls;
     ls  << "| MEMORY READ: 0x" << std::hex << std::setw(4) << unsigned(addr)
-        << " | READ: 0x" << std::hex << std::setw(2) << unsigned(val);
+        << " | READ: 0x" << std::hex << std::setw(4) << unsigned(val);
 
   log.push_back(ls.str());
 }
