@@ -39,7 +39,7 @@ void MEMORY::load(std::string const& path, std::uint16_t const& mstart) {
   if(fexist(path)) {
 
     // Open a file stream
-    std::ifstream input(path, std::ifstream::binary);
+    std::ifstream input(path, std::ios::binary);
     if(input.is_open()) {
 
       // Clarify the file size
@@ -58,12 +58,14 @@ void MEMORY::load(std::string const& path, std::uint16_t const& mstart) {
       input.read(buffer, file_size);
 
       for(unsigned int i = 0; i < file_size; i++)
-        memory[i + mstart] = static_cast<std::uint8_t>(buffer[i]);
+        memory[mstart + i] = static_cast<std::uint8_t>(buffer[i]);
 
       // Report success and free memory
       DEBUG("Binary file loaded: ", path);
       delete [] buffer; // Free memory
       initialized    = true;
+      input.close();
+
     }
 
     ERROR("Failed to open file; cannot access: ", path);

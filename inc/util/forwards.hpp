@@ -33,6 +33,9 @@ class INSTRUCTION;
 class MEMORY;
 class CPU;
 
+class STATE;
+class EMULATOR;
+
 
 /////////////////////////////////////////////////////////////
 // CPU static variables

@@ -55,7 +55,7 @@ CPU::CPU() {
 
   instructions[0x0E] = INSTRUCTION {OPCODE::ASL, ADMODE::ABS, this, &CPU::addr_mode_abs, &CPU::opcode_asl };
   instructions[0x06] = INSTRUCTION {OPCODE::ASL, ADMODE::ZER, this, &CPU::addr_mode_zer, &CPU::opcode_asl };
-  instructions[0x0A] = INSTRUCTION {OPCODE::ASL, ADMODE::ACC, this, &CPU::addr_mode_acc, &CPU::opcode_asl };
+  instructions[0x0A] = INSTRUCTION {OPCODE::ASL, ADMODE::ACC, this, &CPU::addr_mode_acc, &CPU::opcode_asl_acc };
   instructions[0x16] = INSTRUCTION {OPCODE::ASL, ADMODE::ZPX, this, &CPU::addr_mode_zpx, &CPU::opcode_asl };
   instructions[0x1E] = INSTRUCTION {OPCODE::ASL, ADMODE::ABX, this, &CPU::addr_mode_abx, &CPU::opcode_asl };
 
@@ -158,213 +158,89 @@ CPU::CPU() {
   instructions[0xB4] = INSTRUCTION {OPCODE::LDY, ADMODE::ZPX, this, &CPU::addr_mode_zpx, &CPU::opcode_ldy };
   instructions[0xBC] = INSTRUCTION {OPCODE::LDY, ADMODE::ABX, this, &CPU::addr_mode_abx, &CPU::opcode_ldy };
 
-/*
+  instructions[0x4E] = INSTRUCTION {OPCODE::LSR, ADMODE::ABS, this, &CPU::addr_mode_abs, &CPU::opcode_lsr };
+  instructions[0x46] = INSTRUCTION {OPCODE::LSR, ADMODE::ZER, this, &CPU::addr_mode_zer, &CPU::opcode_lsr };
+  instructions[0x4A] = INSTRUCTION {OPCODE::LSR, ADMODE::ACC, this, &CPU::addr_mode_acc, &CPU::opcode_lsr_acc };
+  instructions[0x56] = INSTRUCTION {OPCODE::LSR, ADMODE::ZPX, this, &CPU::addr_mode_zpx, &CPU::opcode_lsr };
+  instructions[0x5E] = INSTRUCTION {OPCODE::LSR, ADMODE::ABX, this, &CPU::addr_mode_abx, &CPU::opcode_lsr };
 
+  instructions[0xEA] = INSTRUCTION {OPCODE::NOP, ADMODE::IMP, this, &CPU::addr_mode_imp, &CPU::opcode_nop };
 
-  instr.addr_mode = &m6502::addrmode_abs;
-  instr.opcode = &m6502::opcode_lsr;
-  instrtable[0x4E] = instr;
-  instr.addr_mode = &m6502::addrmode_zer;
-  instr.opcode = &m6502::opcode_lsr;
-  instrtable[0x46] = instr;
-  instr.addr_mode = &m6502::addrmode_acc;
-  instr.opcode = &m6502::opcode_lsr_acc;
-  instrtable[0x4A] = instr;
-  instr.addr_mode = &m6502::addrmode_zpx;
-  instr.opcode = &m6502::opcode_lsr;
-  instrtable[0x56] = instr;
-  instr.addr_mode = &m6502::addrmode_abx;
-  instr.opcode = &m6502::opcode_lsr;
-  instrtable[0x5E] = instr;
+  instructions[0x09] = INSTRUCTION {OPCODE::ORA, ADMODE::IMM, this, &CPU::addr_mode_imm, &CPU::opcode_ora };
+  instructions[0x0D] = INSTRUCTION {OPCODE::ORA, ADMODE::ABS, this, &CPU::addr_mode_abs, &CPU::opcode_ora };
+  instructions[0x05] = INSTRUCTION {OPCODE::ORA, ADMODE::ZER, this, &CPU::addr_mode_zer, &CPU::opcode_ora };
+  instructions[0x01] = INSTRUCTION {OPCODE::ORA, ADMODE::INX, this, &CPU::addr_mode_inx, &CPU::opcode_ora };
+  instructions[0x11] = INSTRUCTION {OPCODE::ORA, ADMODE::INY, this, &CPU::addr_mode_iny, &CPU::opcode_ora };
+  instructions[0x15] = INSTRUCTION {OPCODE::ORA, ADMODE::ZPX, this, &CPU::addr_mode_zpx, &CPU::opcode_ora };
+  instructions[0x1D] = INSTRUCTION {OPCODE::ORA, ADMODE::ABX, this, &CPU::addr_mode_abx, &CPU::opcode_ora };
+  instructions[0x19] = INSTRUCTION {OPCODE::ORA, ADMODE::ABY, this, &CPU::addr_mode_aby, &CPU::opcode_ora };
 
-  instr.addr_mode = &m6502::addrmode_imp;
-  instr.opcode = &m6502::opcode_nop;
-  instrtable[0xEA] = instr;
+  instructions[0x48] = INSTRUCTION {OPCODE::PHA, ADMODE::IMP, this, &CPU::addr_mode_imp, &CPU::opcode_pha };
 
-  instr.addr_mode = &m6502::addrmode_imm;
-  instr.opcode = &m6502::opcode_ora;
-  instrtable[0x09] = instr;
-  instr.addr_mode = &m6502::addrmode_abs;
-  instr.opcode = &m6502::opcode_ora;
-  instrtable[0x0D] = instr;
-  instr.addr_mode = &m6502::addrmode_zer;
-  instr.opcode = &m6502::opcode_ora;
-  instrtable[0x05] = instr;
-  instr.addr_mode = &m6502::addrmode_inx;
-  instr.opcode = &m6502::opcode_ora;
-  instrtable[0x01] = instr;
-  instr.addr_mode = &m6502::addrmode_iny;
-  instr.opcode = &m6502::opcode_ora;
-  instrtable[0x11] = instr;
-  instr.addr_mode = &m6502::addrmode_zpx;
-  instr.opcode = &m6502::opcode_ora;
-  instrtable[0x15] = instr;
-  instr.addr_mode = &m6502::addrmode_abx;
-  instr.opcode = &m6502::opcode_ora;
-  instrtable[0x1D] = instr;
-  instr.addr_mode = &m6502::addrmode_aby;
-  instr.opcode = &m6502::opcode_ora;
-  instrtable[0x19] = instr;
+  instructions[0x08] = INSTRUCTION {OPCODE::PHP, ADMODE::IMP, this, &CPU::addr_mode_imp, &CPU::opcode_php };
 
-  instr.addr_mode = &m6502::addrmode_imp;
-  instr.opcode = &m6502::opcode_pha;
-  instrtable[0x48] = instr;
+  instructions[0x68] = INSTRUCTION {OPCODE::PLA, ADMODE::IMP, this, &CPU::addr_mode_imp, &CPU::opcode_pla };
 
-  instr.addr_mode = &m6502::addrmode_imp;
-  instr.opcode = &m6502::opcode_php;
-  instrtable[0x08] = instr;
+  instructions[0x28] = INSTRUCTION {OPCODE::PLP, ADMODE::IMP, this, &CPU::addr_mode_imp, &CPU::opcode_plp };
 
-  instr.addr_mode = &m6502::addrmode_imp;
-  instr.opcode = &m6502::opcode_pla;
-  instrtable[0x68] = instr;
+  instructions[0x2E] = INSTRUCTION {OPCODE::ROL, ADMODE::ABS, this, &CPU::addr_mode_abs, &CPU::opcode_rol };
+  instructions[0x26] = INSTRUCTION {OPCODE::ROL, ADMODE::ZER, this, &CPU::addr_mode_zer, &CPU::opcode_rol };
+  instructions[0x2A] = INSTRUCTION {OPCODE::ROL, ADMODE::ACC, this, &CPU::addr_mode_acc, &CPU::opcode_rol_acc };
+  instructions[0x36] = INSTRUCTION {OPCODE::ROL, ADMODE::ZPX, this, &CPU::addr_mode_zpx, &CPU::opcode_rol };
+  instructions[0x3E] = INSTRUCTION {OPCODE::ROL, ADMODE::ABX, this, &CPU::addr_mode_abx, &CPU::opcode_rol };
 
-  instr.addr_mode = &m6502::addrmode_imp;
-  instr.opcode = &m6502::opcode_plp;
-  instrtable[0x28] = instr;
+  instructions[0x6E] = INSTRUCTION {OPCODE::ROR, ADMODE::ABS, this, &CPU::addr_mode_abs, &CPU::opcode_ror };
+  instructions[0x66] = INSTRUCTION {OPCODE::ROR, ADMODE::ZER, this, &CPU::addr_mode_zer, &CPU::opcode_ror };
+  instructions[0x6A] = INSTRUCTION {OPCODE::ROR, ADMODE::ACC, this, &CPU::addr_mode_acc, &CPU::opcode_ror_acc };
+  instructions[0x76] = INSTRUCTION {OPCODE::ROR, ADMODE::ZPX, this, &CPU::addr_mode_zpx, &CPU::opcode_ror };
+  instructions[0x7E] = INSTRUCTION {OPCODE::ROR, ADMODE::ABX, this, &CPU::addr_mode_abx, &CPU::opcode_ror };
 
-  instr.addr_mode = &m6502::addrmode_abs;
-  instr.opcode = &m6502::opcode_rol;
-  instrtable[0x2E] = instr;
-  instr.addr_mode = &m6502::addrmode_zer;
-  instr.opcode = &m6502::opcode_rol;
-  instrtable[0x26] = instr;
-  instr.addr_mode = &m6502::addrmode_acc;
-  instr.opcode = &m6502::opcode_rol_acc;
-  instrtable[0x2A] = instr;
-  instr.addr_mode = &m6502::addrmode_zpx;
-  instr.opcode = &m6502::opcode_rol;
-  instrtable[0x36] = instr;
-  instr.addr_mode = &m6502::addrmode_abx;
-  instr.opcode = &m6502::opcode_rol;
-  instrtable[0x3E] = instr;
+  instructions[0x40] = INSTRUCTION {OPCODE::RTI, ADMODE::IMP, this, &CPU::addr_mode_imp, &CPU::opcode_rti };
 
-  instr.addr_mode = &m6502::addrmode_abs;
-  instr.opcode = &m6502::opcode_ror;
-  instrtable[0x6E] = instr;
-  instr.addr_mode = &m6502::addrmode_zer;
-  instr.opcode = &m6502::opcode_ror;
-  instrtable[0x66] = instr;
-  instr.addr_mode = &m6502::addrmode_acc;
-  instr.opcode = &m6502::opcode_ror_acc;
-  instrtable[0x6A] = instr;
-  instr.addr_mode = &m6502::addrmode_zpx;
-  instr.opcode = &m6502::opcode_ror;
-  instrtable[0x76] = instr;
-  instr.addr_mode = &m6502::addrmode_abx;
-  instr.opcode = &m6502::opcode_ror;
-  instrtable[0x7E] = instr;
+  instructions[0x60] = INSTRUCTION {OPCODE::RTS, ADMODE::IMP, this, &CPU::addr_mode_imp, &CPU::opcode_rts };
 
-  instr.addr_mode = &m6502::addrmode_imp;
-  instr.opcode = &m6502::opcode_rti;
-  instrtable[0x40] = instr;
+  instructions[0xE9] = INSTRUCTION {OPCODE::SBC, ADMODE::IMM, this, &CPU::addr_mode_imm, &CPU::opcode_sbc };
+  instructions[0xED] = INSTRUCTION {OPCODE::SBC, ADMODE::ABS, this, &CPU::addr_mode_abs, &CPU::opcode_sbc };
+  instructions[0xE5] = INSTRUCTION {OPCODE::SBC, ADMODE::ZER, this, &CPU::addr_mode_zer, &CPU::opcode_sbc };
+  instructions[0xE1] = INSTRUCTION {OPCODE::SBC, ADMODE::INX, this, &CPU::addr_mode_inx, &CPU::opcode_sbc };
+  instructions[0xF1] = INSTRUCTION {OPCODE::SBC, ADMODE::INY, this, &CPU::addr_mode_iny, &CPU::opcode_sbc };
+  instructions[0xF5] = INSTRUCTION {OPCODE::SBC, ADMODE::ZPX, this, &CPU::addr_mode_zpx, &CPU::opcode_sbc };
+  instructions[0xFD] = INSTRUCTION {OPCODE::SBC, ADMODE::ABX, this, &CPU::addr_mode_abx, &CPU::opcode_sbc };
+  instructions[0xF9] = INSTRUCTION {OPCODE::SBC, ADMODE::ABY, this, &CPU::addr_mode_aby, &CPU::opcode_sbc };
 
-  instr.addr_mode = &m6502::addrmode_imp;
-  instr.opcode = &m6502::opcode_rts;
-  instrtable[0x60] = instr;
+  instructions[0x38] = INSTRUCTION {OPCODE::SEC, ADMODE::IMP, this, &CPU::addr_mode_imp, &CPU::opcode_sec };
 
-  instr.addr_mode = &m6502::addrmode_imm;
-  instr.opcode = &m6502::opcode_sbc;
-  instrtable[0xE9] = instr;
-  instr.addr_mode = &m6502::addrmode_abs;
-  instr.opcode = &m6502::opcode_sbc;
-  instrtable[0xED] = instr;
-  instr.addr_mode = &m6502::addrmode_zer;
-  instr.opcode = &m6502::opcode_sbc;
-  instrtable[0xE5] = instr;
-  instr.addr_mode = &m6502::addrmode_inx;
-  instr.opcode = &m6502::opcode_sbc;
-  instrtable[0xE1] = instr;
-  instr.addr_mode = &m6502::addrmode_iny;
-  instr.opcode = &m6502::opcode_sbc;
-  instrtable[0xF1] = instr;
-  instr.addr_mode = &m6502::addrmode_zpx;
-  instr.opcode = &m6502::opcode_sbc;
-  instrtable[0xF5] = instr;
-  instr.addr_mode = &m6502::addrmode_abx;
-  instr.opcode = &m6502::opcode_sbc;
-  instrtable[0xFD] = instr;
-  instr.addr_mode = &m6502::addrmode_aby;
-  instr.opcode = &m6502::opcode_sbc;
-  instrtable[0xF9] = instr;
+  instructions[0xF8] = INSTRUCTION {OPCODE::SED, ADMODE::IMP, this, &CPU::addr_mode_imp, &CPU::opcode_sed };
 
-  instr.addr_mode = &m6502::addrmode_imp;
-  instr.opcode = &m6502::opcode_sec;
-  instrtable[0x38] = instr;
+  instructions[0x78] = INSTRUCTION {OPCODE::SEI, ADMODE::IMP, this, &CPU::addr_mode_imp, &CPU::opcode_sei };
 
-  instr.addr_mode = &m6502::addrmode_imp;
-  instr.opcode = &m6502::opcode_sed;
-  instrtable[0xF8] = instr;
+  instructions[0x8D] = INSTRUCTION {OPCODE::STA, ADMODE::ABS, this, &CPU::addr_mode_abs, &CPU::opcode_sta };
+  instructions[0x85] = INSTRUCTION {OPCODE::STA, ADMODE::ZER, this, &CPU::addr_mode_zer, &CPU::opcode_sta };
+  instructions[0x81] = INSTRUCTION {OPCODE::STA, ADMODE::INX, this, &CPU::addr_mode_inx, &CPU::opcode_sta };
+  instructions[0x91] = INSTRUCTION {OPCODE::STA, ADMODE::INY, this, &CPU::addr_mode_iny, &CPU::opcode_sta };
+  instructions[0x95] = INSTRUCTION {OPCODE::STA, ADMODE::ZPX, this, &CPU::addr_mode_zpx, &CPU::opcode_sta };
+  instructions[0x9D] = INSTRUCTION {OPCODE::STA, ADMODE::ABX, this, &CPU::addr_mode_abx, &CPU::opcode_sta };
+  instructions[0x99] = INSTRUCTION {OPCODE::STA, ADMODE::ABY, this, &CPU::addr_mode_aby, &CPU::opcode_sta };
 
-  instr.addr_mode = &m6502::addrmode_imp;
-  instr.opcode = &m6502::opcode_sei;
-  instrtable[0x78] = instr;
+  instructions[0x8E] = INSTRUCTION {OPCODE::STX, ADMODE::ABS, this, &CPU::addr_mode_abs, &CPU::opcode_stx };
+  instructions[0x86] = INSTRUCTION {OPCODE::STX, ADMODE::ZER, this, &CPU::addr_mode_zer, &CPU::opcode_stx };
+  instructions[0x96] = INSTRUCTION {OPCODE::STX, ADMODE::ZPY, this, &CPU::addr_mode_zpy, &CPU::opcode_stx };
 
-  instr.addr_mode = &m6502::addrmode_abs;
-  instr.opcode = &m6502::opcode_sta;
-  instrtable[0x8D] = instr;
-  instr.addr_mode = &m6502::addrmode_zer;
-  instr.opcode = &m6502::opcode_sta;
-  instrtable[0x85] = instr;
-  instr.addr_mode = &m6502::addrmode_inx;
-  instr.opcode = &m6502::opcode_sta;
-  instrtable[0x81] = instr;
-  instr.addr_mode = &m6502::addrmode_iny;
-  instr.opcode = &m6502::opcode_sta;
-  instrtable[0x91] = instr;
-  instr.addr_mode = &m6502::addrmode_zpx;
-  instr.opcode = &m6502::opcode_sta;
-  instrtable[0x95] = instr;
-  instr.addr_mode = &m6502::addrmode_abx;
-  instr.opcode = &m6502::opcode_sta;
-  instrtable[0x9D] = instr;
-  instr.addr_mode = &m6502::addrmode_aby;
-  instr.opcode = &m6502::opcode_sta;
-  instrtable[0x99] = instr;
+  instructions[0x8C] = INSTRUCTION {OPCODE::STY, ADMODE::ABS, this, &CPU::addr_mode_abs, &CPU::opcode_stx };
+  instructions[0x84] = INSTRUCTION {OPCODE::STY, ADMODE::ZER, this, &CPU::addr_mode_zer, &CPU::opcode_stx };
+  instructions[0x94] = INSTRUCTION {OPCODE::STY, ADMODE::ZPX, this, &CPU::addr_mode_zpx, &CPU::opcode_stx };
 
-  instr.addr_mode = &m6502::addrmode_abs;
-  instr.opcode = &m6502::opcode_stx;
-  instrtable[0x8E] = instr;
-  instr.addr_mode = &m6502::addrmode_zer;
-  instr.opcode = &m6502::opcode_stx;
-  instrtable[0x86] = instr;
-  instr.addr_mode = &m6502::addrmode_zpy;
-  instr.opcode = &m6502::opcode_stx;
-  instrtable[0x96] = instr;
+  instructions[0xAA] = INSTRUCTION {OPCODE::TAX, ADMODE::IMP, this, &CPU::addr_mode_imp, &CPU::opcode_tax };
 
-  instr.addr_mode = &m6502::addrmode_abs;
-  instr.opcode = &m6502::opcode_sty;
-  instrtable[0x8C] = instr;
-  instr.addr_mode = &m6502::addrmode_zer;
-  instr.opcode = &m6502::opcode_sty;
-  instrtable[0x84] = instr;
-  instr.addr_mode = &m6502::addrmode_zpx;
-  instr.opcode = &m6502::opcode_sty;
-  instrtable[0x94] = instr;
+  instructions[0xA8] = INSTRUCTION {OPCODE::TAY, ADMODE::IMP, this, &CPU::addr_mode_imp, &CPU::opcode_tay };
 
-  instr.addr_mode = &m6502::addrmode_imp;
-  instr.opcode = &m6502::opcode_tax;
-  instrtable[0xAA] = instr;
+  instructions[0xBA] = INSTRUCTION {OPCODE::TSX, ADMODE::IMP, this, &CPU::addr_mode_imp, &CPU::opcode_tsx };
 
-  instr.addr_mode = &m6502::addrmode_imp;
-  instr.opcode = &m6502::opcode_tay;
-  instrtable[0xA8] = instr;
+  instructions[0x8A] = INSTRUCTION {OPCODE::TXA, ADMODE::IMP, this, &CPU::addr_mode_imp, &CPU::opcode_txa };
 
-  instr.addr_mode = &m6502::addrmode_imp;
-  instr.opcode = &m6502::opcode_tsx;
-  instrtable[0xBA] = instr;
+  instructions[0x9A] = INSTRUCTION {OPCODE::TXS, ADMODE::IMP, this, &CPU::addr_mode_imp, &CPU::opcode_txs };
 
-  instr.addr_mode = &m6502::addrmode_imp;
-  instr.opcode = &m6502::opcode_txa;
-  instrtable[0x8A] = instr;
-
-  instr.addr_mode = &m6502::addrmode_imp;
-  instr.opcode = &m6502::opcode_txs;
-  instrtable[0x9A] = instr;
-
-  instr.addr_mode = &m6502::addrmode_imp;
-  instr.opcode = &m6502::opcode_tya;
-  instrtable[0x98] = instr;
-  */
+  instructions[0x98] = INSTRUCTION {OPCODE::TYA, ADMODE::IMP, this, &CPU::addr_mode_imp, &CPU::opcode_tya };
 
   reset();  // Reset the CPUSTATE
 }
@@ -394,18 +270,29 @@ void CPU::irq() {
 }
 
 
-uint8_t const& CPU::step() {
+uint8_t const& CPU::step(STATE& s) {
+
+  state.opcode = memory[state.pc];  // Fetch
+  s.log.log_cpu(state, instructions[state.opcode]);
+  instructions[state.opcode](); // Decode and execute
+
+  ++state.pc;
   // Do something
   return state.cycles;
 }
 
 
-void CPU::load(std::string const& path, std::uint16_t const& mstart) {
+void CPU::load(std::string const& path, uint16_t const& mstart) {
+  // Attempt to load our binary file
+  memory.load(path, mstart);
 
+  // Set the PC to point to the beginning of the program
+  state.pc = 0x400;
 }
 
 
 void CPU::reset() {
+  // initialize the CPU default state
   state.a              = 0x00;
   state.y              = 0x00;
   state.x              = 0x00;
@@ -415,6 +302,7 @@ void CPU::reset() {
   state.cycles         = 6;
   state.invalid_opcode = false;
   state.initialized    = true;
+  memory.reset();
 }
 
 
@@ -422,7 +310,7 @@ void CPU::reset() {
 // Private CPU methods
 //
 
-void CPU::stack_push(std::uint16_t const& data) {
+void CPU::stack_push(uint16_t const& data) {
   memory[0x100 + state.sp] = data;
 
   // Check for overflow
@@ -497,7 +385,7 @@ uint16_t const& CPU::addr_mode_rel() {
 uint16_t const& CPU::addr_mode_abs() {
   // Absolute- stores in next two bytes as low order then high order
   state.addr          = memory[state.pc++];
-  std::uint16_t high  = memory[state.pc++] << 8;
+  uint16_t high  = memory[state.pc++] << 8;
   return state.addr  += high;
 }
 
@@ -505,7 +393,7 @@ uint16_t const& CPU::addr_mode_abs() {
 uint16_t const& CPU::addr_mode_abx() {
   // Absolute X- stores in next two bytes as low order then high order + X
   state.addr          = memory[state.pc++];
-  std::uint16_t high  = memory[state.pc++] << 8;
+  uint16_t high  = memory[state.pc++] << 8;
   return state.addr  += high + state.x;
 }
 
@@ -528,10 +416,10 @@ uint16_t const& CPU::addr_mode_imp() {
 uint16_t const& CPU::addr_mode_ind() {
   // Indirect - Instr identifies the location of the least significant byte
   // of another 16 bit memory address which is the target of the instruction
-  std::uint16_t low  = memory[state.pc++];
-  std::uint16_t high = memory[state.pc++] << 8;
+  uint16_t low  = memory[state.pc++];
+  uint16_t high = memory[state.pc++] << 8;
 
-  std::uint16_t next = memory[low + high + 1] << 8;
+  uint16_t next = memory[low + high + 1] << 8;
   return state.addr  = memory[low + high] + next + 0x100;
 }
 
@@ -540,7 +428,7 @@ uint16_t const& CPU::addr_mode_inx() {
   // Indexed Indirect - Addr taken from the instruction and the X register added
   // to it (with zero page wrap around)
   state.addr         = (memory[state.pc++] + state.x) % 256;
-  std::uint16_t high = memory[((state.addr + 1) % 256)];
+  uint16_t high = memory[((state.addr + 1) % 256)];
   return state.addr  = memory[state.addr] + (high << 8);
 }
 
@@ -549,6 +437,6 @@ uint16_t const& CPU::addr_mode_iny() {
   // Indirect Indexed -  instruction contains the zero page location of the
   // lsb. The Y register is added to generate the target address for operation.
   state.addr         = memory[state.pc++];
-  std::uint16_t high = memory[(state.addr + 1) % 256];
+  uint16_t high = memory[(state.addr + 1) % 256];
   return state.addr  = memory[state.addr] + (high << 8) + state.y;
 }

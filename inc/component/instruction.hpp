@@ -30,9 +30,11 @@
 //
 
 enum class OPCODE {
-  INV, ADS, AND, ASL, BCC, BCS, BEQ, BIT, BMI, BNE, BPL, BRK,
-  BVC, BVS, CLC, CLD, CLI, CLV, CMP, CPX, CPY, DEC, DEX, DEY,
-  EOR, INC, INX, INY, JMP, JSR, LDA, LDX, LDY
+  INV, ADS, AND, ASL, BCC, BCS, BEQ, BIT, BMI, BNE, BPL, BRK, BVC,
+  BVS, CLC, CLD, CLI, CLV, CMP, CPX, CPY, DEC, DEX, DEY, EOR, INC,
+  INX, INY, JMP, JSR, LDA, LDX, LDY, LSR, NOP, ORA, PHA, PHP, PLA,
+  PLP, ROL, ROR, RTI, RTS, SBC, SEC, SED, SEI, STA, STX, STY, TAX,
+  TAY, TSX, TXA, TXS, TYA
 };
 
 enum class ADMODE {
@@ -67,6 +69,9 @@ public:
     // Compare delegates to see if the pointers match
     return (id == rhs.id) && (mode == rhs.mode);
   };
+
+  OPCODE const& get_opcode() const noexcept { return id; }
+  ADMODE const& get_admode() const noexcept { return mode; }
 
 private:
   // Private INSTRUCTION attributes

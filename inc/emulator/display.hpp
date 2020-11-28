@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////
 //
-// e6502 - e6502.cpp
+// e6502 - display.hpp
 //
 // Copyright (c) 2020 Christopher M. Short
 //
@@ -21,25 +21,46 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#include "e6502.hpp"
+#ifndef _E6502_DISPLAY_HPP
+#define _E6502_DISPLAY_HPP
 
 
 /////////////////////////////////////////////////////////////
-// Main function
+// DISPLAY Class
 //
+// The DISPLAY class renders debug information for the user to
+// review
 
-int main(const int argc, const char *argv[]) {
-  // Initialize the emulator
-  std::unique_ptr<EMULATOR> emulator;
-  emulator = std::make_unique<EMULATOR>();
-  emulator->initialize();
 
-  // Run the emulator
-  emulator->run();
+class DISPLAY {
+public:
+  DISPLAY() : window(nullptr), width(0), height(0), initialized(false) {};
+  ~DISPLAY() { finalize(); }
 
-  // Finalize the emulator
-  emulator->finalize();
-  emulator = nullptr;
+  // Public DISPLAY methods
+  void initialize();
+  void update(STATE const& state);
+  void finalize();
 
-  return 0;
-}
+  void key_down(STATE const& state);
+  void key_up();
+
+  WINDOW*         get_window() { return window.get(); }
+  uint64_t const& get_offset() { return offset; }
+
+private:
+  // Private DISPLAY attributes
+  std::shared_ptr<WINDOW> window;
+  int                     width;
+  int                     height;
+  bool                    initialized;
+  uint64_t                offset;
+
+  // Private DISPLAY methods
+  void print_header();
+  void print_logger(STATE const& state);
+  void print_footer();
+
+};
+
+#endif // _E6502_DISPLAY_HPP

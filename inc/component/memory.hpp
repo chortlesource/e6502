@@ -29,7 +29,7 @@
 // DEFINITIONS
 //
 
-static const std::uint16_t RAM_SIZE = 65535;
+static const std::uint32_t RAM_SIZE = 0x10000;
 
 namespace fs = std::experimental::filesystem;
 
@@ -46,6 +46,7 @@ public:
 
   // Public MEMORY methods
   void load(std::string const& path, std::uint16_t const& mstart);
+  void reset() { memory.fill(0); }
 
   std::uint8_t &      operator[](std::uint16_t const& addr) { return memory[addr]; }
   std::uint8_t const& operator[](std::uint16_t const& addr) const { return memory[addr]; }

@@ -41,6 +41,7 @@ struct CPUSTATE {
   uint16_t pc;       // Program counter
   uint8_t  flags;    // CPU Status flags
   uint8_t  cycles;   // Record the number of cycles
+  uint16_t  opcode;   // The current opcode
 
   uint16_t addr;    // For use by addressing modes
 };
@@ -62,8 +63,8 @@ public:
   void irq();
   void load(std::string const& path, uint16_t const& mstart = 0);
   void reset();
-
-  uint8_t const& step();
+  
+  uint8_t const& step(STATE& s);
 
 private:
   // Private CPU attributes

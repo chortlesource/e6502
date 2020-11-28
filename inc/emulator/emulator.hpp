@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////
 //
-// e6502 - e6502.hpp
+// e6502 - emulator.hpp
 //
 // Copyright (c) 2020 Christopher M. Short
 //
@@ -21,55 +21,52 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#ifndef _E6502_HPP
-#define _E6502_HPP
+#ifndef _E6502_EMULATOR_HPP
+#define _E6502_EMULATOR_HPP
 
 
 /////////////////////////////////////////////////////////////
-// DEPENDENCIES
+// STATUS Enumeration
 //
 
-// Ncurses
-#include <ncurses.h>
+enum class STATUS {
+  INIT, RUN, EXIT
+};
 
-// Standard Libraries
-#include <iostream>
-#include <iomanip>
-#include <fstream>
-#include <functional>
-#include <experimental/filesystem>
+/////////////////////////////////////////////////////////////
+// STATE Struct
+//
 
-#include <string>
-#include <array>
-#include <mutex>
-#include <bitset>
+struct STATE {
+  STATUS  status;
+  int     key;
+
+  DISPLAY display;
+  LOG     log;
+  CPU     cpu;
+};
 
 
 /////////////////////////////////////////////////////////////
-// PROGRAM INFORMATION
+// EMULATOR Class
 //
+// The EMULATOR class executes the application logic
 
-static const std::string _APP_NAME    = "e6502";
-static const std::string _APP_VERSION = "0.0.1-ALPHA";
-static const std::string _APP_AUTHOR  = "C. M. Short";
-static const std::string _APP_SOURCE  = "http://www.github.com/chortlesoft/e6502";
+class EMULATOR {
+public:
+  // Public EMULATOR methods
+  void initialize();
+  void run();
+  void finalize();
 
+private:
+  // Private EMULATOR attributes;
+  bool                   initialized;
+  std::shared_ptr<STATE> state;
 
-/////////////////////////////////////////////////////////////
-// LOCAL INCLUDES
-//
+  // Private EMULATOR methods
 
-#include "util/forwards.hpp"
-#include "util/debug.hpp"
-#include "util/timer.hpp"
-#include "component/instruction.hpp"
-#include "component/memory.hpp"
-#include "component/cpu.hpp"
-#include "emulator/log.hpp"
-#include "emulator/display.hpp"
-#include "emulator/emulator.hpp"
+};
 
 
-
-
-#endif // _E6502_HPP
+#endif // _E6502_EMULATOR_HPP
