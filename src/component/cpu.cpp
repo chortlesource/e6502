@@ -283,6 +283,12 @@ uint8_t const& CPU::step() {
 }
 
 
+void CPU::run_cpu() {
+  for(unsigned int i = 0; i < 10000 && !state.invalid_opcode; i++)
+    step();
+}
+
+
 void CPU::load(std::string const& path, uint16_t const& mstart) {
   // Attempt to load our binary file
   memory.load(path);

@@ -30,7 +30,7 @@
 //
 
 enum class STATUS {
-  INIT, RUN, EXIT
+  INIT, RUN, PAUSE, EXIT
 };
 
 /////////////////////////////////////////////////////////////

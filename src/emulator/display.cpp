@@ -134,11 +134,15 @@ void DISPLAY::print_footer() {
     mvwaddch(window.get(), height - 1, i, ' ');
 
   // Add our menu items
-  mvwprintw(window.get(), height -1 , 8, "EXIT");
-  mvwprintw(window.get(), height -1 , 22, "STEP CPU");
+  mvwprintw(window.get(), height -1 , 6, "EXIT");
+  mvwprintw(window.get(), height -1 , 16, "STEP CPU");
+  mvwprintw(window.get(), height -1 , 30, "RUN");
+  mvwprintw(window.get(), height -1 , 39, "SAVE LOG");
   wattroff(window.get(), COLOR_PAIR(2));
 
   // Add our key binding
   mvwprintw(window.get(), height -1 , 2, "[X]");
-  mvwprintw(window.get(), height -1 , 16, "[S]");
+  mvwprintw(window.get(), height -1 , 12, "[S]");
+  mvwprintw(window.get(), height -1 , 26, "[R]");
+  mvwprintw(window.get(), height -1 , 35, "[O]");
 }

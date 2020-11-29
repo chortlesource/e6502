@@ -89,6 +89,12 @@ void EMULATOR::run() {
       case 's':
         state.cpu->step();
         break;
+      case 'o':
+        state.log->export_log();
+        break;
+      case 'r':
+        state.cpu->run_cpu();
+        break;
       case KEY_UP:
         {
           state.display->key_up();

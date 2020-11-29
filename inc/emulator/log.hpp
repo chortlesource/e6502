@@ -36,6 +36,7 @@ public:
   void log_cpu(CPUSTATE const& state, INSTRUCTION const& i);
   void log_read(uint16_t const& addr, uint8_t const& val);
   void log_write(uint16_t const& addr, uint8_t const& val);
+  void export_log();
 
   std::string&       operator[](unsigned int const& i) { return log[i]; }
   std::string const& operator[](unsigned int const& i) const { return log[i]; }

@@ -67,6 +67,7 @@ public:
   std::uint8_t const& read(std::uint16_t const& addr);
   void write(std::uint16_t const& addr, std::uint8_t const& val);
 
+  void run_cpu();
   uint8_t const& step();
 
 private:

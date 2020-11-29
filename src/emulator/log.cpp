@@ -64,6 +64,16 @@ void LOG::log_write(uint16_t const& addr, uint8_t const& val) {
 }
 
 
+void LOG::export_log() {
+  if(log.size() < 1) return;
+
+  std::ofstream outfile("./e6502.log", std::ofstream::out | std::ofstream::trunc);
+  if(outfile.is_open()) {
+    for(const auto &i: log)
+      outfile << i << "\n";
+  }
+}
+
 std::string const& LOG::get_opcode(OPCODE const& op) {
   switch(op) {
   case OPCODE::INV:
