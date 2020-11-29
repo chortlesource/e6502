@@ -31,7 +31,8 @@
 void LOG::log_cpu(CPUSTATE const& state, INSTRUCTION const& i) {
   std::stringstream ls;
 
-  ls  << "|0x" << std::hex << std::setw(4) << unsigned(state.opcode)
+  ls  << "|PC:0x" << std::hex << std::setw(4) << unsigned(state.pc)
+      << "|0x" << std::hex << std::setw(4) << unsigned(state.opcode)
       << "|"   << get_opcode(i.get_opcode())
       << "|"   << get_admode(i.get_admode())
       << "|A:0x"   << std::hex << std::setw(2) << unsigned(state.a)

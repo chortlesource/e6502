@@ -39,8 +39,28 @@ void CPU::opcode_invalid(uint16_t const& value) {
 // ADS - Add with Carry
 void CPU::opcode_ads(uint16_t const& value) {
   // Add A, Mem[Value] and Carry flag
-  uint16_t ads = read(value) + state.a + is_carry_set(state.flags);
+  //uint16_t ads = read(value) + state.a + is_carry_set(state.flags);
 
+  // Read the memory address
+  uint8_t mem = read(value);
+  unsigned int rvalue = mem + state.a + is_carry_set(state.flags);
+  set_zero(!(rvalue & 0xFF), state.flags);
+  if(is_decimal_set(state.flags)) {
+    if(((state.a & 0xF) + (mem & 0xF) + is_carry_set(state.flags)) > 9) rvalue += 6;
+    set_negative(rvalue & 0x80, state.flags);
+    set_overflow(!((state.a ^ mem) & 0x80) && ((state.a ^ rvalue) & 0x80), state.flags);
+    if (rvalue > 0x99)
+    {
+      rvalue += 96;
+    }
+    set_carry((rvalue > 0x99), state.flags);
+  } else {
+    set_negative(rvalue & 0x80, state.flags);
+    set_overflow(!((state.a ^ mem) & 0x80) && ((state.a ^ rvalue) & 0x80), state.flags);
+		set_carry((rvalue > 0xFF), state.flags);
+  }
+
+  /*
   // BCD Support
   if(is_decimal_set(state.flags)) {
     // First add the two low nibbles and carry
@@ -58,13 +78,17 @@ void CPU::opcode_ads(uint16_t const& value) {
     set_zero(!(ads & 0xFF), state.flags);    // If zero set flag
     set_carry(ads > 0xFF, state.flags);      // If exceeds 8 bits set carry
     set_negative(ads & 0x80, state.flags);  // If top bit set number is negative
+    state.pc++;
+    state.a = ads & 0xFF;
     return;
   }
-
   set_overflow(!((state.a ^ memory[value]) & 0x80) && ((state.a ^ ads) & 0x80), state.flags);
   set_zero(!(ads & 0xFF), state.flags);
   set_carry(ads > 0xFF, state.flags);
   set_negative(ads & 0x80, state.flags);
+  */
+  state.a = rvalue & 0xFF;
+  state.pc++;
 }
 
 // AND - Logical AND (Accumulator)
@@ -203,6 +227,7 @@ void CPU::opcode_cmp(uint16_t const& value) {
   set_zero(!(v & 0xFF), state.flags);
   set_negative(v & 0x80, state.flags);
   set_carry((state.a >= memory[value]), state.flags);
+  state.pc++;
 }
 
 
@@ -223,6 +248,7 @@ void CPU::opcode_cpy(uint16_t const& value) {
   set_zero(!(v & 0xFF), state.flags);
   set_negative(v & 0x80, state.flags);
   set_carry((state.y >= memory[value]), state.flags);
+  state.pc++;
 }
 
 
@@ -241,7 +267,7 @@ void CPU::opcode_dex(uint16_t const& value) {
   uint8_t x = state.x - 1;
   state.x   = x;
   // Check flags
-  set_zero(!(x & 0xFF), state.flags);
+  set_zero(x == 0, state.flags);
   set_negative(x & 0x80, state.flags);
 }
 
@@ -259,10 +285,11 @@ void CPU::opcode_dey(uint16_t const& value) {
 
 // EOR - Exclusive OR
 void CPU::opcode_eor(uint16_t const& value) {
-  state.a ^= read(value);
+  state.a = state.a ^ read(value);
   // Check flags
-  set_zero(!(state.a & 0xFF), state.flags);
+  set_zero(state.a == 0, state.flags);
   set_negative(state.a & 0x80, state.flags);
+  state.pc++;
 }
 
 
@@ -298,8 +325,7 @@ void CPU::opcode_iny(uint16_t const& value) {
 
 // JMP - Jump
 void CPU::opcode_jmp(uint16_t const& value) {
-  state.pc = value - 1;
-  std::cerr << std::hex << unsigned(value) << std::endl;
+  state.pc = value;
 }
 
 
@@ -318,6 +344,7 @@ void CPU::opcode_lda(uint16_t const& value) {
   // Check flags
   set_zero(!(state.a & 0xFF), state.flags);
   set_negative(state.a & 0x80, state.flags);
+  state.pc++;
 }
 
 
@@ -327,6 +354,7 @@ void CPU::opcode_ldx(uint16_t const& value) {
   // Check flags
   set_zero(!(state.x & 0xFF), state.flags);
   set_negative(state.x & 0x80, state.flags);
+  state.pc++;
 }
 
 
@@ -336,6 +364,7 @@ void CPU::opcode_ldy(uint16_t const& value) {
   // Check flags
   set_zero(!(state.y & 0xFF), state.flags);
   set_negative(state.y & 0x80, state.flags);
+  state.pc++;
 }
 
 
@@ -491,6 +520,7 @@ void CPU::opcode_sbc(uint16_t const& value) {
   set_carry(sbc > 0xFF, state.flags);
 
   state.a = sbc & 0xFF;
+  state.pc++;
 }
 
 
@@ -515,6 +545,7 @@ void CPU::opcode_sei(uint16_t const& value) {
 // STA - Store Accumulator
 void CPU::opcode_sta(uint16_t const& value) {
   write(value, state.a);
+  state.pc++;
 }
 
 

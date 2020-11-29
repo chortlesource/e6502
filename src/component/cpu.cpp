@@ -274,12 +274,9 @@ void CPU::irq() {
 
 
 uint8_t const& CPU::step() {
-
-  state.opcode = memory[state.pc];  // Fetch
+  state.opcode = read(state.pc++);  // Fetch
   instructions[state.opcode](); // Decode and execute
   log->log_cpu(state, instructions[state.opcode]);
-
-  state.pc++;
 
   // Do something
   return state.cycles;
@@ -363,20 +360,20 @@ uint16_t const& CPU::addr_mode_acc() {
 
 uint16_t const& CPU::addr_mode_imm() {
   // Immediate- the next byte in the program counter is the operand
-  return state.pc += 1;
+  return state.pc;
 }
 
 
 uint16_t const& CPU::addr_mode_zer() {
   // Zero page has only an 8 bit address operand which is the next byte
-  return state.addr = memory[state.pc += 1];
+  return state.addr = memory[state.pc++];
 }
 
 
 uint16_t const& CPU::addr_mode_zpx() {
   // Zero Page X - take zero page and add to the current value of X
   // then wrap to constrain to < 0xFF
-  state.addr = (memory[state.pc += 1] + state.x) % 256;
+  state.addr = (memory[state.pc++] + state.x) % 256;
   return state.addr;
 }
 
@@ -384,7 +381,7 @@ uint16_t const& CPU::addr_mode_zpx() {
 uint16_t const& CPU::addr_mode_zpy() {
   // Zero Page Y - take zero page and add to the current value of Y
   // then wrap to constrain to < 0xFF
-  state.addr = (memory[state.pc += 1] + state.y) % 256;
+  state.addr = (memory[state.pc++] + state.y) % 256;
   return state.addr;
 }
 
@@ -392,7 +389,7 @@ uint16_t const& CPU::addr_mode_zpy() {
 uint16_t const& CPU::addr_mode_rel() {
   // Relative - if(condition == true) a signed 8 bit relative offset
   // is added to program counter
-  state.addr = memory[state.pc++];
+  state.addr = read(state.pc++);
   if(state.addr & 0x80) state.addr |= 0xFF00;
   return state.addr += state.pc;
 }
@@ -400,8 +397,8 @@ uint16_t const& CPU::addr_mode_rel() {
 
 uint16_t const& CPU::addr_mode_abs() {
   // Absolute- stores in next two bytes as low order then high order
-  state.addr     = read(state.pc += 1);
-  uint16_t high  = read(state.pc += 1) << 8;
+  state.addr     = read(state.pc++);
+  uint16_t high  = read(state.pc) << 8;
   return state.addr  += high;
 }
 
